@@ -16,9 +16,11 @@ public class Inventory : MonoBehaviour
             if (slots[i] == null)
             {
                 slots[i] = item;
-                
+
+                Picklable picklable = item.GetComponent<Picklable>();
+
                 item.transform.position = new Vector3(i, 100, 1);
-                item.transform.rotation = Quaternion.Euler(-90, 0, 180);
+                item.transform.rotation = Quaternion.Euler(picklable.InventoryRotation);
 
                 OnItemAdded.Invoke(item);
                 

@@ -142,6 +142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: Red Skull
   PickableDistance: 1.5
+  InventoryPositionOffset: {x: 0, y: 0, z: 0}
+  InventoryRotation: {x: -90, y: 0, z: 180}
   OnPick:
     m_PersistentCalls:
       m_Calls: []
@@ -1036,6 +1038,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: Red Skull
   PickableDistance: 1.5
+  InventoryPositionOffset: {x: 0, y: 0, z: 0}
+  InventoryRotation: {x: -90, y: 0, z: 180}
   OnPick:
     m_PersistentCalls:
       m_Calls: []
@@ -1181,17 +1185,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa82940f5b742942a6f779ed0e6e13d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   OnItemAdded:
     m_PersistentCalls:
       m_Calls: []
@@ -1962,6 +1955,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: Red Skull
   PickableDistance: 1.5
+  InventoryPositionOffset: {x: 0, y: 0, z: 0}
+  InventoryRotation: {x: -90, y: 0, z: 180}
   OnPick:
     m_PersistentCalls:
       m_Calls: []

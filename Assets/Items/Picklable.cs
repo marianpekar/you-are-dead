@@ -8,6 +8,8 @@ public class Picklable : MonoBehaviour
     public string Title;
     public float PickableDistance = 1.5f;
 
+    public Vector3 InventoryRotation;
+
     public UnityEvent OnPick;
 
     private SphereCollider sphereCollider;
