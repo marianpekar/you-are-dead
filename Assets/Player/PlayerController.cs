@@ -31,16 +31,24 @@ public class PlayerController : MonoBehaviour
 
         Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
 
+        Socket socket = hit.collider.gameObject.GetComponent<Socket>();
+        if (socket)
+        {
+            if (Vector3.Distance(gameObject.transform.position, socket.transform.position) <= socket.InteractableDistance)
+            {
+                socket.TryPlaceSelectedItem(inventory);
+                return;
+            }
+            else
+            {
+                targetSocket = socket;
+            }
+        }
+
         Item item = hit.collider.gameObject.GetComponent<Item>();
         if (item)
         {
             targetItem = item;
-        }
-
-        Socket socket = hit.collider.gameObject.GetComponent<Socket>();
-        if (socket)
-        {
-            targetSocket = socket;
         }
 
         SetTarget(hit.point);
@@ -63,6 +71,7 @@ public class PlayerController : MonoBehaviour
 
             targetSocket.TryPlaceSelectedItem(inventory);
             targetSocket = null;
+            return;
         }
     }
 
