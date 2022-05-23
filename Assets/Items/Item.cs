@@ -3,10 +3,11 @@ using UnityEngine.Events;
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(MeshRenderer))]
-public class Picklable : MonoBehaviour
+public class Item : MonoBehaviour
 {
-    public string Title;
-    public float PickableDistance = 1.5f;
+    public string Name;
+
+    public float InteractableDistance = 1.5f;
 
     public Vector3 InventoryRotation;
 
@@ -19,7 +20,7 @@ public class Picklable : MonoBehaviour
         sphereCollider = GetComponent<SphereCollider>();
     }
 
-    public Picklable Pick()
+    public Item Pick()
     {
         sphereCollider.enabled = false;
 

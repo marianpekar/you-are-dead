@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Inventory))]
@@ -8,12 +9,17 @@ public class PlayerController : MonoBehaviour
     private Inventory inventory;
     private NavMeshAgent agent;
 
-    private Picklable selectedPickable;
+    private Item targetItem;
+    private Socket targetSocket;
+
+    private Camera mainCamera;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         inventory = GetComponent<Inventory>();
+
+        mainCamera = Camera.main;
     }
 
 
@@ -21,12 +27,20 @@ public class PlayerController : MonoBehaviour
     {
         if (!Input.GetMouseButton(0)) return;
 
-        if (!Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out var hit, 1000)) return;
+        if (EventSystem.current.IsPointerOverGameObject() || !Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out var hit, 1000)) return;
 
-        Picklable picklable = hit.collider.gameObject.GetComponent<Picklable>();
-        if (picklable)
+        Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
+
+        Item item = hit.collider.gameObject.GetComponent<Item>();
+        if (item)
         {
-            selectedPickable = picklable;
+            targetItem = item;
+        }
+
+        Socket socket = hit.collider.gameObject.GetComponent<Socket>();
+        if (socket)
+        {
+            targetSocket = socket;
         }
 
         SetTarget(hit.point);
@@ -34,13 +48,21 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (selectedPickable && Vector3.Distance(gameObject.transform.position, selectedPickable.transform.position) <= selectedPickable.PickableDistance)
+        if (targetItem && Vector3.Distance(gameObject.transform.position, targetItem.transform.position) <= targetItem.InteractableDistance)
         {
             agent.destination = gameObject.transform.position;
 
-            GameObject pickableGo = selectedPickable.Pick().gameObject;
-            selectedPickable = null;
+            GameObject pickableGo = targetItem.Pick().gameObject;
+            targetItem = null;
             inventory.AddItem(pickableGo);
+        }
+
+        if (targetSocket && Vector3.Distance(gameObject.transform.position, targetSocket.transform.position) <= targetSocket.InteractableDistance)
+        {
+            agent.destination = gameObject.transform.position;
+
+            targetSocket.TryPlaceSelectedItem(inventory);
+            targetSocket = null;
         }
     }
 
