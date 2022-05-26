@@ -27,7 +27,9 @@ public class Inventory : MonoBehaviour
                 itemGo.transform.rotation = Quaternion.Euler(item.InventoryRotation);
 
                 OnItemAdded.Invoke(i);
-                
+
+                SetSelectedItemIndex(i);
+
                 return;
             }
         }

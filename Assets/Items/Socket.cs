@@ -1,14 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Socket : MonoBehaviour
 {
-    public string ExpectedItemName;
-
     public float InteractableDistance = 1.5f;
 
-    public Vector3 PlacePositionOffset;
+    [SerializeField]
+    private string expectedItemName;
+
+    [SerializeField]
+    private Vector3 PlacePositionOffset;
+
+    [SerializeField]
+    private Vector3 PlaceRotation;
+
+    public UnityEvent OnItemPlaced;
 
     public void TryPlaceSelectedItem(Inventory inventory)
     {
@@ -18,10 +24,14 @@ public class Socket : MonoBehaviour
         {
             Item item = itemGo.GetComponent<Item>();
 
-            if(ExpectedItemName.Equals(item.Name))
+            if(expectedItemName.Equals(item.Name))
             {
                 item.transform.position = gameObject.transform.position + PlacePositionOffset;
+                item.transform.rotation = Quaternion.Euler(PlaceRotation);
+
                 inventory.RemoveSelectedItem();
+
+                OnItemPlaced.Invoke();
             }
         }
     }
