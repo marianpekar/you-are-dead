@@ -11,7 +11,7 @@ public class Item : MonoBehaviour
 
     public Vector3 InventoryRotation;
 
-    public UnityEvent OnPick;
+    public UnityEvent OnPlace;
 
     private SphereCollider sphereCollider;
 
@@ -23,8 +23,6 @@ public class Item : MonoBehaviour
     public Item Pick()
     {
         sphereCollider.enabled = false;
-
-        OnPick.Invoke();
 
         return this;
     }

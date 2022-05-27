@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private Item targetItem;
     private Socket targetSocket;
+    private Rotatable targetRotatable;
 
     private Camera mainCamera;
 
@@ -25,18 +26,38 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButtonDown(0)) return;
 
         if (EventSystem.current.IsPointerOverGameObject() || !Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out var hit, 1000)) return;
 
         Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
+
+        Rotatable rotatable = hit.collider.gameObject.GetComponent<Rotatable>();
+        if(rotatable)
+        {
+            if(Vector3.Distance(gameObject.transform.position, rotatable.transform.position) <= rotatable.InteractableDistance)
+            {
+                rotatable.Rotate();
+                return;
+            }
+            else
+            {
+                targetRotatable = rotatable;
+            }
+
+        }
 
         Socket socket = hit.collider.gameObject.GetComponent<Socket>();
         if (socket)
         {
             if (Vector3.Distance(gameObject.transform.position, socket.transform.position) <= socket.InteractableDistance)
             {
-                socket.TryPlaceSelectedItem(inventory);
+                Item itemFromSocket = socket.Interact(inventory);
+                if(itemFromSocket)
+                {
+                    inventory.AddItem(itemFromSocket.gameObject);
+                }
+
                 return;
             }
             else
@@ -63,14 +84,30 @@ public class PlayerController : MonoBehaviour
             GameObject pickableGo = targetItem.Pick().gameObject;
             targetItem = null;
             inventory.AddItem(pickableGo);
+            return;
         }
 
         if (targetSocket && Vector3.Distance(gameObject.transform.position, targetSocket.transform.position) <= targetSocket.InteractableDistance)
         {
             agent.destination = gameObject.transform.position;
 
-            targetSocket.TryPlaceSelectedItem(inventory);
+            Item itemFromSocket = targetSocket.Interact(inventory);
+            if (itemFromSocket)
+            {
+                inventory.AddItem(itemFromSocket.gameObject);
+            }
+
             targetSocket = null;
+            return;
+        }
+
+        if (targetRotatable && Vector3.Distance(gameObject.transform.position, targetRotatable.transform.position) <= targetRotatable.InteractableDistance)
+        {
+            agent.destination = gameObject.transform.position;
+
+            targetRotatable.Rotate();
+
+            targetRotatable = null;
             return;
         }
     }

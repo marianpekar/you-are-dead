@@ -8,6 +8,8 @@ Shader "Custom/Dissolve"
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _DissolveTexture("Dissolve Texutre", 2D) = "white" {}
         _Amount("Amount", Range(0,1)) = 0
+        _ScrollSpeed("Scroll Speed", Float) = 0.05
+        _RimColor("Rim Color", Color) = (1,1,1)
     }
     SubShader
     {
@@ -32,6 +34,8 @@ Shader "Custom/Dissolve"
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
+        fixed3 _RimColor;
+        float _ScrollSpeed;
 
         sampler2D _DissolveTexture;
         half _Amount;
@@ -47,10 +51,10 @@ Shader "Custom/Dissolve"
         {
             half dissolve_value = tex2D(_DissolveTexture, IN.uv_MainTex).r;
             clip(dissolve_value - _Amount);
-            o.Emission = fixed3(0, 1, 0) * step(dissolve_value - _Amount, 0.03f);
+            o.Emission = fixed3(_RimColor) * step(dissolve_value - _Amount, 0.03);
 
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex + _Time * 0.05) * _Color;
+            fixed4 c = tex2D (_MainTex, IN.uv_MainTex + _Time * _ScrollSpeed) * _Color;
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
