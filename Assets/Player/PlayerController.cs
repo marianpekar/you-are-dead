@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private Socket targetSocket;
     private Rotatable targetRotatable;
     private Breakable targetBreakable;
+    private TradePlace targetTradePlace;
 
     private Camera mainCamera;
 
@@ -95,6 +96,21 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        TradePlace tradePlace = hit.collider.gameObject.GetComponent<TradePlace>();
+        if(tradePlace)
+        {
+            if(Vector3.Distance(gameObject.transform.position, tradePlace.transform.position) <= tradePlace.InteractableDistance)
+            {
+                tradePlace.TryTrade(inventory);
+                return;
+            }
+            else
+            {
+                targetTradePlace = tradePlace;
+            }
+        }
+        
+
         Item item = hit.collider.gameObject.GetComponent<Item>();
         if (item)
         {
@@ -119,7 +135,7 @@ public class PlayerController : MonoBehaviour
         {
             agent.destination = gameObject.transform.position;
 
-            GameObject pickableGo = targetItem.Pick().gameObject;
+            GameObject pickableGo = targetItem.TryPick().gameObject;
             targetItem = null;
             inventory.AddItem(pickableGo);
             return;
@@ -136,6 +152,16 @@ public class PlayerController : MonoBehaviour
             }
 
             targetSocket = null;
+            return;
+        }
+
+        if (targetTradePlace && Vector3.Distance(gameObject.transform.position, targetTradePlace.transform.position) <= targetTradePlace.InteractableDistance)
+        {
+            agent.destination = gameObject.transform.position;
+
+            targetTradePlace.TryTrade(inventory);
+
+            targetTradePlace = null;
             return;
         }
 

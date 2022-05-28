@@ -14,6 +14,9 @@ public class Item : MonoBehaviour
     public UnityEvent OnPlace;
     public UnityEvent OnPick;
 
+    [SerializeField]
+    bool isPickable = true;
+
     private SphereCollider sphereCollider;
 
     private void Start()
@@ -21,8 +24,11 @@ public class Item : MonoBehaviour
         sphereCollider = GetComponent<SphereCollider>();
     }
 
-    public Item Pick()
+    public Item TryPick()
     {
+        if (!isPickable)
+            return null;
+
         sphereCollider.enabled = false;
 
         OnPick.Invoke();
@@ -30,8 +36,8 @@ public class Item : MonoBehaviour
         return this;
     }
 
-    public void SetActive(bool value)
+    public void SetIsPickable(bool value)
     {
-        gameObject.SetActive(value);
+        isPickable = true;
     }
 }

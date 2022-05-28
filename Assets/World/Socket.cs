@@ -9,10 +9,10 @@ public class Socket : MonoBehaviour
     private string expectedItemName;
 
     [SerializeField]
-    private Vector3 PlacePositionOffset;
+    private Vector3 placePositionOffset;
 
     [SerializeField]
-    private Vector3 PlaceRotation;
+    private Vector3 placeRotation;
 
     public UnityEvent OnItemPlaced;
 
@@ -52,8 +52,8 @@ public class Socket : MonoBehaviour
             {
                 currentItem = item;
 
-                currentItem.transform.position = gameObject.transform.position + PlacePositionOffset;
-                currentItem.transform.rotation = Quaternion.Euler(PlaceRotation);
+                currentItem.transform.position = gameObject.transform.position + placePositionOffset;
+                currentItem.transform.rotation = Quaternion.Euler(placeRotation);
 
                 inventory.RemoveSelectedItem();
 
@@ -67,7 +67,7 @@ public class Socket : MonoBehaviour
         if (!currentItem)
             return null;
         
-        Item returnItem = currentItem.Pick();
+        Item returnItem = currentItem.TryPick();
 
         currentItem = null;
 

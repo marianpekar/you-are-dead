@@ -14,7 +14,7 @@ public class Breakable : MonoBehaviour
     {
         Item selectedInventoryItem = inventory.GetSelectedItem().GetComponent<Item>(); 
 
-        if(selectedInventoryItem.Name == expectedToolToBrakeWith)
+        if(selectedInventoryItem.Name.Equals(expectedToolToBrakeWith))
         {
             OnBreak.Invoke();
             gameObject.SetActive(false);
