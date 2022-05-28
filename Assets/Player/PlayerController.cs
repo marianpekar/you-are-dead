@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private Item targetItem;
     private Socket targetSocket;
     private Rotatable targetRotatable;
+    private Breakable targetBreakable;
 
     private Camera mainCamera;
 
@@ -38,6 +39,21 @@ public class PlayerController : MonoBehaviour
 
         Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
 
+
+        Breakable breakable = hit.collider.gameObject.GetComponent<Breakable>();
+        if(breakable)
+        {
+            if (Vector3.Distance(gameObject.transform.position, breakable.transform.position) <= breakable.InteractableDistance)
+            {
+                breakable.TryBreak(inventory);
+                return;
+            }
+            else
+            {
+                targetBreakable = breakable;
+            }
+        }
+
         TeleportSpell teleportSpell = hit.collider.gameObject.GetComponent<TeleportSpell>();
         if(teleportSpell)
         {
@@ -58,7 +74,6 @@ public class PlayerController : MonoBehaviour
             {
                 targetRotatable = rotatable;
             }
-
         }
 
         Socket socket = hit.collider.gameObject.GetComponent<Socket>();
@@ -91,6 +106,15 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (targetBreakable && Vector3.Distance(gameObject.transform.position, targetBreakable.transform.position) <= targetBreakable.InteractableDistance)
+        {
+            agent.destination = gameObject.transform.position;
+
+            targetBreakable.TryBreak(inventory);
+            targetBreakable = null;
+            return;
+        }
+
         if (targetItem && Vector3.Distance(gameObject.transform.position, targetItem.transform.position) <= targetItem.InteractableDistance)
         {
             agent.destination = gameObject.transform.position;

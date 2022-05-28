@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,6 +26,9 @@ public class Rotatable : MonoBehaviour
     private bool isRotating;
     private bool isInTargetRotation;
 
+    [SerializeField]
+    private bool isActive = true;
+
     void Start()
     {
         targetRoation = Quaternion.Euler(targetRotationEuler);
@@ -36,7 +37,7 @@ public class Rotatable : MonoBehaviour
 
     public void Rotate()
     {
-        if (isRotating)
+        if (isRotating || !isActive)
             return;
 
         isRotating = true;
@@ -75,6 +76,10 @@ public class Rotatable : MonoBehaviour
 
             isRotating = false;
         }
+    }
 
+    public void SetIsActive(bool value)
+    {
+        isActive = true;
     }
 }
