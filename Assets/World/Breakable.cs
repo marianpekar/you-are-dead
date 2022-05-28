@@ -10,8 +10,16 @@ public class Breakable : MonoBehaviour
 
     public UnityEvent OnBreak;
 
+    private bool isLocked = false;
+
     public void TryBreak(Inventory inventory)
     {
+        if (isLocked)
+            return;
+
+        isLocked = true;
+        Invoke(nameof(Unlock), 0.5f);
+
         Item selectedInventoryItem = inventory.GetSelectedItem().GetComponent<Item>(); 
 
         if(selectedInventoryItem.Name.Equals(expectedToolToBrakeWith))
@@ -19,5 +27,10 @@ public class Breakable : MonoBehaviour
             OnBreak.Invoke();
             gameObject.SetActive(false);
         }
+    }
+
+    private void Unlock()
+    {
+        isLocked = false;
     }
 }

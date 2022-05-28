@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TeleportSpell : MonoBehaviour
@@ -6,6 +7,9 @@ public class TeleportSpell : MonoBehaviour
 
     [SerializeField]
     private Transform[] teleportTargets;
+
+    [SerializeField]
+    private Transform[] additionalTeleportTargets;
 
     private int currentTeleportTargetIndex = 0;
 
@@ -69,5 +73,24 @@ public class TeleportSpell : MonoBehaviour
         currentTeleportTargetIndex++;
         if (currentTeleportTargetIndex >= teleportTargets.Length)
             currentTeleportTargetIndex = 0;
+    }
+
+    public void EnableAdditionalTeleportTargets()
+    {
+        List<Transform> newTeleportTargets = new List<Transform>();
+
+        newTeleportTargets.AddRange(teleportTargets);
+        newTeleportTargets.AddRange(additionalTeleportTargets);
+
+        teleportTargets = newTeleportTargets.ToArray();
+    }
+
+    public void DisableAdditionalTeleportTargets()
+    {
+        List<Transform> newTeleportTargets = new List<Transform>();
+
+        newTeleportTargets.AddRange(teleportTargets);
+
+        teleportTargets = newTeleportTargets.ToArray();
     }
 }
