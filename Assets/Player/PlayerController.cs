@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -15,14 +16,19 @@ public class PlayerController : MonoBehaviour
 
     private Camera mainCamera;
 
+    public UnityEvent OnTeleportEnd;
+    public UnityEvent OnTeleportBegin;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         inventory = GetComponent<Inventory>();
 
         mainCamera = Camera.main;
-    }
 
+        OnTeleportBegin.AddListener(() => { agent.enabled = false; });
+        OnTeleportEnd.AddListener(() => { agent.enabled = true; });
+    }
 
     void Update()
     {
@@ -31,6 +37,14 @@ public class PlayerController : MonoBehaviour
         if (EventSystem.current.IsPointerOverGameObject() || !Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out var hit, 1000)) return;
 
         Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
+
+        TeleportSpell teleportSpell = hit.collider.gameObject.GetComponent<TeleportSpell>();
+        if(teleportSpell)
+        {
+            agent.destination = gameObject.transform.position;
+            teleportSpell.Teleport(gameObject);
+            return;
+        }
 
         Rotatable rotatable = hit.collider.gameObject.GetComponent<Rotatable>();
         if(rotatable)
@@ -115,5 +129,5 @@ public class PlayerController : MonoBehaviour
     private void SetTarget(Vector3 target)
     {
         agent.destination = target;
-    } 
+    }
 }

@@ -31,7 +31,8 @@ public class Portal : MonoBehaviour
 
     private float[] startingLightIntensities;
 
-    private bool isOff;
+    [SerializeField]
+    private bool isActive = true;
 
     void Start()
     {
@@ -46,19 +47,14 @@ public class Portal : MonoBehaviour
         startingLightIntensities = currentLightIntensities.ToArray();
     }
 
-    public void TurnOff()
+    public void SetIsActive(bool value)
     {
-        isOff = true;
-    }
-
-    public void TurnOn()
-    {
-        isOff = false;
+        isActive = value;
     }
 
     public void Open()
     {
-        if (isOff)
+        if (!isActive)
             return;
 
         InvokeRepeating(nameof(DissolveRepeating), dissolveSpeed, dissolveSpeed);
@@ -67,7 +63,7 @@ public class Portal : MonoBehaviour
 
     public void Close()
     {
-        if (isOff)
+        if (!isActive)
             return;
 
         InvokeRepeating(nameof(AppearRepeating), dissolveSpeed, dissolveSpeed);
