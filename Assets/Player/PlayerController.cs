@@ -15,8 +15,11 @@ public class PlayerController : MonoBehaviour
     private Rotatable targetRotatable;
     private Breakable targetBreakable;
     private TradePlace targetTradePlace;
+    private EndGameTrigger targetEndGameTrigger;
 
     private Camera mainCamera;
+    private SkinnedMeshRenderer meshRenderer;
+    private PlayerAnimationController playerAnimationController;
 
     public UnityEvent OnTeleportEnd;
     public UnityEvent OnTeleportBegin;
@@ -25,6 +28,8 @@ public class PlayerController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         inventory = GetComponent<Inventory>();
+        meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        playerAnimationController = GetComponent<PlayerAnimationController>();
 
         mainCamera = Camera.main;
 
@@ -40,12 +45,12 @@ public class PlayerController : MonoBehaviour
 
         Debug.DrawLine(mainCamera.ScreenToWorldPoint(Input.mousePosition), hit.point, Color.red);
 
-
         Breakable breakable = hit.collider.gameObject.GetComponent<Breakable>();
         if(breakable)
         {
             if (Vector3.Distance(gameObject.transform.position, breakable.transform.position) <= breakable.InteractableDistance)
             {
+                SetTarget(gameObject.transform.position);
                 breakable.TryBreak(inventory);
                 return;
             }
@@ -58,7 +63,7 @@ public class PlayerController : MonoBehaviour
         TeleportSpell teleportSpell = hit.collider.gameObject.GetComponent<TeleportSpell>();
         if(teleportSpell)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
             teleportSpell.Teleport(gameObject);
             return;
         }
@@ -68,6 +73,7 @@ public class PlayerController : MonoBehaviour
         {
             if(Vector3.Distance(gameObject.transform.position, rotatable.transform.position) <= rotatable.InteractableDistance)
             {
+                SetTarget(gameObject.transform.position);
                 rotatable.Rotate();
                 return;
             }
@@ -82,6 +88,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Vector3.Distance(gameObject.transform.position, socket.transform.position) <= socket.InteractableDistance)
             {
+                SetTarget(gameObject.transform.position);
                 Item itemFromSocket = socket.Interact(inventory);
                 if(itemFromSocket)
                 {
@@ -99,8 +106,9 @@ public class PlayerController : MonoBehaviour
         TradePlace tradePlace = hit.collider.gameObject.GetComponent<TradePlace>();
         if(tradePlace)
         {
-            if(Vector3.Distance(gameObject.transform.position, tradePlace.transform.position) <= tradePlace.InteractableDistance)
+            if (Vector3.Distance(gameObject.transform.position, tradePlace.transform.position) <= tradePlace.InteractableDistance)
             {
+                SetTarget(gameObject.transform.position);
                 tradePlace.TryTrade(inventory);
                 return;
             }
@@ -109,12 +117,25 @@ public class PlayerController : MonoBehaviour
                 targetTradePlace = tradePlace;
             }
         }
-        
 
         Item item = hit.collider.gameObject.GetComponent<Item>();
         if (item)
         {
             targetItem = item;
+        }
+
+        EndGameTrigger endGameTrigger = hit.collider.gameObject.GetComponent<EndGameTrigger>();
+        if(endGameTrigger)
+        {
+            if(Vector3.Distance(gameObject.transform.position, endGameTrigger.transform.position) <= endGameTrigger.InteractableDistance)
+            {
+                endGameTrigger.EndGame();
+                return;
+            }
+            else
+            {
+                targetEndGameTrigger = endGameTrigger;
+            }
         }
 
         SetTarget(hit.point);
@@ -124,7 +145,7 @@ public class PlayerController : MonoBehaviour
     {
         if (targetBreakable && Vector3.Distance(gameObject.transform.position, targetBreakable.transform.position) <= targetBreakable.InteractableDistance)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
 
             targetBreakable.TryBreak(inventory);
             targetBreakable = null;
@@ -133,7 +154,7 @@ public class PlayerController : MonoBehaviour
 
         if (targetItem && Vector3.Distance(gameObject.transform.position, targetItem.transform.position) <= targetItem.InteractableDistance)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
 
             GameObject pickableGo = targetItem.TryPick().gameObject;
             targetItem = null;
@@ -143,7 +164,7 @@ public class PlayerController : MonoBehaviour
 
         if (targetSocket && Vector3.Distance(gameObject.transform.position, targetSocket.transform.position) <= targetSocket.InteractableDistance)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
 
             Item itemFromSocket = targetSocket.Interact(inventory);
             if (itemFromSocket)
@@ -157,7 +178,7 @@ public class PlayerController : MonoBehaviour
 
         if (targetTradePlace && Vector3.Distance(gameObject.transform.position, targetTradePlace.transform.position) <= targetTradePlace.InteractableDistance)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
 
             targetTradePlace.TryTrade(inventory);
 
@@ -167,17 +188,36 @@ public class PlayerController : MonoBehaviour
 
         if (targetRotatable && Vector3.Distance(gameObject.transform.position, targetRotatable.transform.position) <= targetRotatable.InteractableDistance)
         {
-            agent.destination = gameObject.transform.position;
+            SetTarget(gameObject.transform.position);
 
             targetRotatable.Rotate();
 
             targetRotatable = null;
             return;
         }
+
+        if (targetEndGameTrigger && Vector3.Distance(gameObject.transform.position, targetEndGameTrigger.transform.position) <= targetEndGameTrigger.InteractableDistance)
+        {
+            SetTarget(gameObject.transform.position);
+
+            targetEndGameTrigger.EndGame();
+            targetEndGameTrigger = null;
+        }
     }
 
     private void SetTarget(Vector3 target)
     {
         agent.destination = target;
+    }
+
+    public void DisableAgent()
+    {
+        playerAnimationController.enabled = false;
+        agent.enabled = false;
+    }
+    
+    public void HideMesh()
+    {
+        meshRenderer.enabled = false;
     }
 }
