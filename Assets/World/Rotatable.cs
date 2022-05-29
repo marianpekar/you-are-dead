@@ -19,9 +19,9 @@ public class Rotatable : MonoBehaviour
     [SerializeField]
     private float rotationStep = 1f;
 
-
     public UnityEvent OnTargetRotationReached;
     public UnityEvent OnStartRotationReached;
+    public UnityEvent OnMove;
 
     private bool isRotating;
     private bool isInTargetRotation;
@@ -41,6 +41,8 @@ public class Rotatable : MonoBehaviour
             return;
 
         isRotating = true;
+
+        OnMove?.Invoke();
 
         InvokeRepeating(nameof(RotateRepeating), rotationSpeed, rotationSpeed);
     }

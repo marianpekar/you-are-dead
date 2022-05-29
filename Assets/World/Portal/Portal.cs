@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Portal : MonoBehaviour
 {
@@ -34,6 +35,9 @@ public class Portal : MonoBehaviour
     [SerializeField]
     private bool isActive = true;
 
+    public UnityEvent OnOpen;
+    public UnityEvent OnClose;
+
     void Start()
     {
         meshRenderer = fill.GetComponent<MeshRenderer>();
@@ -57,6 +61,8 @@ public class Portal : MonoBehaviour
         if (!isActive)
             return;
 
+        OnOpen?.Invoke();
+
         InvokeRepeating(nameof(DissolveRepeating), dissolveSpeed, dissolveSpeed);
         InvokeRepeating(nameof(DimLightsRepeating), dimLightsSpeed, dimLightsSpeed);
     }
@@ -65,6 +71,8 @@ public class Portal : MonoBehaviour
     {
         if (!isActive)
             return;
+
+        OnClose.Invoke();
 
         InvokeRepeating(nameof(AppearRepeating), dissolveSpeed, dissolveSpeed);
         InvokeRepeating(nameof(BrightenLightsRepeating), dimLightsSpeed, dimLightsSpeed);

@@ -24,7 +24,7 @@ public class Breakable : MonoBehaviour
 
         if(selectedInventoryItem.Name.Equals(expectedToolToBrakeWith))
         {
-            OnBreak.Invoke();
+            OnBreak?.Invoke();
             gameObject.SetActive(false);
         }
     }

@@ -11,7 +11,6 @@ public class Item : MonoBehaviour
 
     public Vector3 InventoryRotation;
 
-    public UnityEvent OnPlace;
     public UnityEvent OnPick;
 
     [SerializeField]

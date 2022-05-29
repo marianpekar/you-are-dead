@@ -23,6 +23,7 @@ public class UIController : MonoBehaviour
     [SerializeField]
     private float endGameTextTypeSpeed = 0.2f;
 
+
     [SerializeField]
     private float endGameTextTypeStartDelay = 2f;
 
@@ -33,6 +34,7 @@ public class UIController : MonoBehaviour
 
     [SerializeField]
     private float overlayFadeInStepSize = 0.01f;
+
 
     UnityEvent OnEndGameCharTyped;
 
@@ -98,6 +100,14 @@ public class UIController : MonoBehaviour
         if(currentEndGameTextCharIndex >= endGameText.Length)
         {
             CancelInvoke(nameof(TypeEndGameTextRoutine));
+        }
+    }
+
+    public void DisableAllInventorySlots()
+    {
+        for(int i = 0; i < inventorySlots.Length; i++)
+        {
+            DisableInventorySlot(i);
         }
     }
 }
